@@ -3,7 +3,8 @@ import React, { useState, useEffect } from 'react';
 
 const IndigmaContent: React.FC = () => {
   const [visibility, setVisibility] = useState<number>(1);
-
+  const [hasInteracted, setHasInteracted] = useState<boolean>(false);
+  
   useEffect(() => {
     const handleScroll = () => {
       const scrollY = window.scrollY;
@@ -14,6 +15,20 @@ const IndigmaContent: React.FC = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const handleInteraction = () => {
+    // Set interaction flag to true
+    setHasInteracted(true);
+    
+    // This interaction will satisfy browser autoplay policies
+    console.log("User interaction detected - audio can now autoplay");
+    
+    // You can trigger your audio playback here
+    // For example:
+    // if (audioRef.current) {
+    //   audioRef.current.play();
+    // }
+  };
 
   return (
     <div
@@ -29,7 +44,10 @@ const IndigmaContent: React.FC = () => {
         <div className="text-white text-center drop-shadow-lg">
           <h1 className="text-6xl font-bold">Intuxe</h1>
           <p className="text-lg mt-2">I hold back sometimes i won't</p>
-          <button className="mt-4 px-6 py-2 bg-white text-black font-semibold rounded-lg hover:bg-gray-300 transition">
+          <button 
+            className="mt-4 px-6 py-2 bg-white text-black font-semibold rounded-lg hover:bg-gray-300 transition"
+            onClick={handleInteraction}
+          >
             Get Started
           </button>
         </div>

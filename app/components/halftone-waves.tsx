@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
-export default function Component() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const scrollRef = useRef(0);
+export default function HalftoneWaves() {
+  const canvasRef = useRef(null);
+  const [visibility, setVisibility] = useState(1);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -12,7 +12,7 @@ export default function Component() {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    let animationFrameId: number;  // Fix TypeScript error
+    let animationFrameId;
     let time = 0;
 
     const resizeCanvas = () => {
@@ -20,7 +20,7 @@ export default function Component() {
       canvas.height = window.innerHeight;
     };
 
-    const drawHalftoneWave = (visibility: number) => {  // Fix TypeScript error
+    const drawHalftoneWave = (vis) => {
       const gridSize = 20;
       const rows = Math.ceil(canvas.height / gridSize);
       const cols = Math.ceil(canvas.width / gridSize);
@@ -39,19 +39,18 @@ export default function Component() {
           );
           const normalizedDistance = distanceFromCenter / maxDistance;
           const waveOffset = Math.sin(normalizedDistance * 10 - time) * 0.5 + 0.5;
-          const size = gridSize * waveOffset * 0.8 * visibility;
+          const size = gridSize * waveOffset * 0.8 * vis;
 
           ctx.beginPath();
           ctx.arc(centerX, centerY, size / 2, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(255, 255, 255, ${waveOffset * 0.5 * visibility})`;
+          ctx.fillStyle = `rgba(255, 255, 255, ${waveOffset * 0.5 * vis})`;
           ctx.fill();
         }
       }
     };
 
     const animate = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);  // Clear fully for vanishing
-      const visibility = Math.max(1 - scrollRef.current / window.innerHeight, 0);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
       drawHalftoneWave(visibility);
       time += 0.05;
       animationFrameId = requestAnimationFrame(animate);
@@ -65,11 +64,13 @@ export default function Component() {
       cancelAnimationFrame(animationFrameId);
       window.removeEventListener('resize', resizeCanvas);
     };
-  }, []);
+  }, [visibility]);
 
   useEffect(() => {
     const handleScroll = () => {
-      scrollRef.current = window.scrollY;
+      const scrollY = window.scrollY;
+      const newVisibility = Math.max(1 - 2 * (scrollY / window.innerHeight), 0);
+      setVisibility(newVisibility);
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
@@ -77,10 +78,12 @@ export default function Component() {
 
   return (
     <>
-      <canvas ref={canvasRef} className="fixed top-0 left-0 w-full h-screen bg-black" />
-      <div style={{ height: '200vh' }}> {/* Add scrollable content */}
-        {/* Your content here */}
-      </div>
+      <canvas
+        ref={canvasRef}
+        className="fixed top-0 left-0 w-full h-screen bg-black"
+        style={{ opacity: visibility }}
+      />
+      <div style={{ height: '100vh' }} /> {/* Spacer */}
     </>
   );
 }
