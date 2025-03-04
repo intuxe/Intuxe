@@ -1,7 +1,7 @@
 
 import HalftoneWaves from "@/app/components/halftone-waves";
-import RainingLetters from "@/app/components/rainingletters";
-import indigma from '@/app/components/indigma';
+
+
 import IndigmaContent from "@/app/components/indigma";
 import VideoComponent from '@/app/components/video1';
 
@@ -15,4 +15,4 @@ export default function Home() {
             
         </main>
     );
-}
+}/*jaadugari aaj bhi tere dil me he baaki*/
