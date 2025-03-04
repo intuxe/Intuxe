@@ -1,26 +1,29 @@
 "use client";
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from "react";
 
 export default function HalftoneWaves() {
-  const canvasRef = useRef(null);
-  const [visibility, setVisibility] = useState(1);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const [visibility, setVisibility] = useState<number>(1);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    let animationFrameId;
+    let animationFrameId: number | null = null;
     let time = 0;
 
     const resizeCanvas = () => {
+      if (!canvas) return;
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
     };
 
-    const drawHalftoneWave = (vis) => {
+    const drawHalftoneWave = (vis: number) => {
+      if (!canvas || !ctx) return;
+
       const gridSize = 20;
       const rows = Math.ceil(canvas.height / gridSize);
       const cols = Math.ceil(canvas.width / gridSize);
@@ -50,6 +53,7 @@ export default function HalftoneWaves() {
     };
 
     const animate = () => {
+      if (!canvas || !ctx) return;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       drawHalftoneWave(visibility);
       time += 0.05;
@@ -57,12 +61,12 @@ export default function HalftoneWaves() {
     };
 
     resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
+    window.addEventListener("resize", resizeCanvas);
     animate();
 
     return () => {
-      cancelAnimationFrame(animationFrameId);
-      window.removeEventListener('resize', resizeCanvas);
+      if (animationFrameId) cancelAnimationFrame(animationFrameId);
+      window.removeEventListener("resize", resizeCanvas);
     };
   }, [visibility]);
 
@@ -72,8 +76,9 @@ export default function HalftoneWaves() {
       const newVisibility = Math.max(1 - 2 * (scrollY / window.innerHeight), 0);
       setVisibility(newVisibility);
     };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   return (
@@ -83,7 +88,7 @@ export default function HalftoneWaves() {
         className="fixed top-0 left-0 w-full h-screen bg-black"
         style={{ opacity: visibility }}
       />
-      <div style={{ height: '100vh' }} /> {/* Spacer */}
+      <div style={{ height: "100vh" }} /> {/* Spacer */}
     </>
   );
 }

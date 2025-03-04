@@ -3,22 +3,24 @@
 import React, { useRef, useEffect } from 'react';
 
 const VideoComponent = () => {
-  const videoRef = useRef(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
-            videoRef.current.play();
+            videoRef.current?.play();  // Safe with optional chaining
           } else {
-            videoRef.current.pause();
+            videoRef.current?.pause();  // Safe with optional chaining
           }
         });
       },
       { threshold: 0.5 }
     );
+
     if (videoRef.current) observer.observe(videoRef.current);
+
     return () => observer.disconnect();
   }, []);
 
